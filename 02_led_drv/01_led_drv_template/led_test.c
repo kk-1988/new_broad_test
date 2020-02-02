@@ -12,6 +12,7 @@
  */
 int main(int argc, char **argv)
 {
+#if 0
 	int fd;
 	char status;
 	
@@ -45,6 +46,41 @@ int main(int argc, char **argv)
 	close(fd);
 	
 	return 0;
+
+#else
+	//for read
+	int fd;
+	char status;
+	int ret;
+	
+	/* 1. 判断参数 */
+	if (argc != 2) 
+	{
+		printf("Usage: %s <dev>\n", argv[0]);
+		return -1;
+	}
+
+	/* 2. 打开文件 */
+	fd = open(argv[1], O_RDWR);
+	if (fd == -1)
+	{
+		printf("can not open file %s\n", argv[1]);
+		return -1;
+	}
+
+	ret = read(fd, &status, 1);
+	if(ret == 1)
+	{
+		if(1 == status)
+			printf("on\r\n");
+		else if(0 == status)
+			printf("off\r\n");
+	}
+	
+	close(fd);
+	
+	return 0;
+#endif
 }
 
 

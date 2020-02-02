@@ -26,10 +26,18 @@ static struct class *led_class;
 #define MIN(a, b) (a < b ? a : b)
 
 /* 3. 实现对应的open/read/write等函数，填入file_operations结构体                   */
+//课后练习，即在这里进行读取即可
 static ssize_t led_drv_read (struct file *file, char __user *buf, size_t size, loff_t *offset)
 {
 	printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
-	return 0;
+	int err;
+	char status;
+	struct inode *inode = file_inode(file);
+	int minor = iminor(inode);
+	status = p_led_opr->read(minor);
+	
+	err = copy_to_user(buf, &status, 1);
+	return 1;
 }
 
 static ssize_t led_drv_write (struct file *file, const char __user *buf, size_t size, loff_t *offset)

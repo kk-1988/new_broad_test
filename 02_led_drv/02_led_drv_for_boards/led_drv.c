@@ -68,6 +68,9 @@ static int led_drv_open (struct inode *node, struct file *file)
 static int led_drv_close (struct inode *node, struct file *file)
 {
 	printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
+	/* 调用iounremap 释放相关资源 */
+	p_led_opr->close();
+	
 	return 0;
 }
 

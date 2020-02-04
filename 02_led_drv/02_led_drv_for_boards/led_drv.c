@@ -98,10 +98,10 @@ static int __init led_init(void)
 		return -1;
 	}
 
-	for(i = 0;i < LED_NUM; i++)
-		device_create(led_class, NULL, MKDEV(major, i), NULL, "kxb_led%d",i); /* /dev/kxb_ledn */
-
 	p_led_opr = board_demo_opr_get();
+
+	for(i = 0;i < p_led_opr->num; i++)
+		device_create(led_class, NULL, MKDEV(major, i), NULL, "kxb_led%d",i); /* /dev/kxb_ledn */
 	
 	return 0;
 }
@@ -112,7 +112,7 @@ static void __exit led_exit(void)
 	int i;
 	printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
 
-	for(i = 0;i < LED_NUM; i++)
+	for(i = 0;i < p_led_opr->num; i++)
 		device_destroy(led_class, MKDEV(major, i)); /* /dev/kxb_ledn */
 	
 	class_destroy(led_class);

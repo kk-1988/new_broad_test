@@ -48,8 +48,51 @@ static int board_demo_led_init(int which)
 		p_gpio5 = ioremap(0x20ac000,sizeof(struct imx6ull_gpio));
 	}
 
-	
-	
+	if(0 == which)
+	{
+		/* 1.enable GPIO5 */
+		*CCM_CCGR1 =(3 << 30);
+
+		/* 2. set GPIOS as GPIO */
+		IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3 = 0x5;
+
+		/* 3. set GPIOS as GPIO */
+		p_gpio5->gdir |= (1<<3);
+	}
+	else if(1 == which)
+	{
+		/* 1.enable GPIO5 */
+		*CCM_CCGR1 =(3 << 26);
+
+		/* 2. set GPIOS as GPIO */
+		p_iomux->IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO03 = 0x5;
+
+		/* 3. set GPIOS as GPIO */
+		p_gpio1->gdir |= (1<<3);
+	}
+	else if(2 == which)
+	{
+		/* 1.enable GPIO5 */
+		*CCM_CCGR1 =(3 << 26);
+
+		/* 2. set GPIOS as GPIO */
+		p_iomux->IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO05 = 0x5;
+
+		/* 3. set GPIOS as GPIO */
+		p_gpio1->gdir |= (1<<5);
+	}
+	else if(3 == which)
+	{
+		/* 1.enable GPIO5 */
+		*CCM_CCGR1 =(3 << 26);
+
+		/* 2. set GPIOS as GPIO */
+		p_iomux->IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO06 = 0x5;
+
+		/* 3. set GPIOS as GPIO */
+		p_gpio1->gdir |= (1<<6);
+	}
+
 	return 0;
 }
 
@@ -58,7 +101,51 @@ static int board_demo_led_init(int which)
 */
 static int borad_demo_led_ctl(int which, char status)
 {
-	printk("%s %s line %d, led %d  %d %s\n",__FILE__,__FUNCTION__,__LINE__, which, status, status ? "on":"off");
+	//printk("%s %s line %d, led %d  %d %s\n",__FILE__,__FUNCTION__,__LINE__, which, status, status ? "on":"off");
+	if(0 == which)
+	{
+		if(status)
+		{
+			p_gpio5->dr &= ~(1<<3);
+		}
+		else
+		{
+			p_gpio5->dr |= (1 << 3);
+		}
+	}
+	else if(1 == which)
+	{
+		if(status)
+		{
+			p_gpio1->dr &= ~(1<<3);
+		}
+		else
+		{
+			p_gpio1->dr |= (1 << 3);
+		}
+	}
+	else if(2 == which)
+	{
+		if(status)
+		{
+			p_gpio1->dr &= ~(1<<5);
+		}
+		else
+		{
+			p_gpio1->dr |= (1 << 5);
+		}
+	}
+	else if(3 == which)
+	{
+		if(status)
+		{
+			p_gpio1->dr &= ~(1<<6);
+		}
+		else
+		{
+			p_gpio1->dr |= (1 << 6);
+		}
+	}
 	return 0;
 }
 

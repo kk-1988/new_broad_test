@@ -18,5 +18,5 @@ clean:
 	rm -rf modules.order
 	rm -f led_test
 
-kxb_led-y := led_drv.o board_demo.o
+kxb_led-y := led_drv.o board_demo_imx6ull_qemu.o
 obj-m	+= kxb_led.o

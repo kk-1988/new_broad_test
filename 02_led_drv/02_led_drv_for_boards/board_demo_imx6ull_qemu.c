@@ -213,19 +213,34 @@ static void board_demo_led_close(void)
 	printk("%s %s line %d\n",__FILE__,__FUNCTION__,__LINE__);
 	
 	if(p_gpio5)
+	{
 		iounmap(p_gpio5);
+		p_gpio5 = NULL;
+	}
 
 	if(p_gpio1)
+	{
 		iounmap(p_gpio1);
+		p_gpio1 = NULL;
+	}
 
 	if(p_iomux)
+	{
 		iounmap(p_iomux);
+		p_iomux = NULL;
+	}
 
 	if(IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3)
+	{
 		iounmap(IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3);
+		IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3 = NULL;
+	}
 
 	if(CCM_CCGR1)
+	{
 		iounmap(CCM_CCGR1);
+		CCM_CCGR1 = NULL;
+	}
 }
 
 static struct led_operations board_demo_led_opr = {

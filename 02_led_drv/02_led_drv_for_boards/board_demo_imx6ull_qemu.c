@@ -54,7 +54,7 @@ static int board_demo_led_init(int which)
 		*CCM_CCGR1 =(3 << 30);
 
 		/* 2. set GPIOS as GPIO */
-		IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3 = 0x5;
+		*IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3 = 0x5;
 
 		/* 3. set GPIOS as GPIO */
 		p_gpio5->gdir |= (1<<3);
@@ -102,6 +102,7 @@ static int board_demo_led_init(int which)
 static int borad_demo_led_ctl(int which, char status)
 {
 	//printk("%s %s line %d, led %d  %d %s\n",__FILE__,__FUNCTION__,__LINE__, which, status, status ? "on":"off");
+#if 0
 	if(0 == which)
 	{
 		if(status)
@@ -146,6 +147,55 @@ static int borad_demo_led_ctl(int which, char status)
 			p_gpio1->dr |= (1 << 6);
 		}
 	}
+#else
+	switch(which)
+	{
+		case 0:
+			if(status)
+			{
+				p_gpio5->dr &= ~(1<<3);
+			}
+			else
+			{
+				p_gpio5->dr |= (1 << 3);
+			}
+		break;
+			
+		case 1:
+			if(status)
+			{
+				p_gpio1->dr &= ~(1<<3);
+			}
+			else
+			{
+				p_gpio1->dr |= (1 << 3);
+			}
+		break;
+
+		case 2:
+			if(status)
+			{
+				p_gpio1->dr &= ~(1<<5);
+			}
+			else
+			{
+				p_gpio1->dr |= (1<<5);
+			}
+		break;
+
+		case 3:
+			if(status)
+			{
+				p_gpio1->dr &= ~(1<<6);
+			}
+			else
+			{
+				p_gpio1->dr |= (1<<6);
+			}
+		break;
+	}
+#endif
+	
 	return 0;
 }
 
@@ -158,10 +208,31 @@ static char borad_demo_led_read(int which)
 	return 1;
 }
 
+static void board_demo_led_close(void)
+{
+	printk("%s %s line %d\n",__FILE__,__FUNCTION__,__LINE__);
+	
+	if(p_gpio5)
+		iounmap(p_gpio5);
+
+	if(p_gpio1)
+		iounmap(p_gpio1);
+
+	if(p_iomux)
+		iounmap(p_iomux);
+
+	if(IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3)
+		iounmap(IOMUXC_SNVS_SW_MUX_CTL_PAD_SNVS_TAMPER3);
+
+	if(CCM_CCGR1)
+		iounmap(CCM_CCGR1);
+}
+
 static struct led_operations board_demo_led_opr = {
 	.init = board_demo_led_init,
 	.ctl = borad_demo_led_ctl,
 	.read = borad_demo_led_read,
+	.close = board_demo_led_close,
 	.num = 4,
 };
 

@@ -112,6 +112,9 @@ static void __exit led_exit(void)
 	int i;
 	printk("%s %s line %d\n", __FILE__, __FUNCTION__, __LINE__);
 
+	/* 调用iounremap 释放相关资源 */
+	p_led_opr->close();
+	
 	for(i = 0;i < p_led_opr->num; i++)
 		device_destroy(led_class, MKDEV(major, i)); /* /dev/kxb_ledn */
 	

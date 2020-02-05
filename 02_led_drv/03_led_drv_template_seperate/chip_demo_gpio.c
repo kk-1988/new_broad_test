@@ -6,6 +6,7 @@ static struct led_resource *led_rsc;
 
 /*
 * 初始化LED，which - 哪个led
+* 已知晓group和pin，则可以具体知道是哪个pin了，然后我们可以进行统一的操作了(针对某一款芯片)
 */
 static int board_demo_led_init(int which)
 {
@@ -104,6 +105,7 @@ static char borad_demo_led_read(int which)
 static struct led_operations board_demo_led_opr = {
 	.init = board_demo_led_init,
 	.ctl = borad_demo_led_ctl,
+	.read=  borad_demo_led_read,
 };
 
 struct led_operations *board_demo_opr_get(void)

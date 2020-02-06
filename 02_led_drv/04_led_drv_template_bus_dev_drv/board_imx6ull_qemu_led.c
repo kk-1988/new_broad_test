@@ -32,17 +32,25 @@ static struct resource led_resources[] = {
 		.name = "kxb_led",
 		.flags = IORESOURCE_IRQ,
 	},
+	{
+		.start = GROUP_PIN(5,4),
+		.name = "kxb_led",
+		.flags = IORESOURCE_IRQ,
+	},
 };
+
+static void led_dev_release(struct device *dev)
+{
+	
+}
 
 static struct platform_device board_imx6ull_qemu_led_dev = {
 	.name = "kxb_led",
 	.num_resources = ARRAY_SIZE(led_resources),
 	.resource = led_resources,
-	/*
 	.dev = {
 	        .release = led_dev_release,
 	 },
-	*/
 };
 
 static int led_dev_init(void)

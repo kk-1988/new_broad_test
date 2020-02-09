@@ -1,5 +1,6 @@
 #include <linux/gfp.h>
 #include <linux/module.h>
+#include <linux/of.h>
 #include "led_opr.h"
 #include "led_reource.h"
 #include "led_drv.h"
@@ -48,7 +49,6 @@ static int board_demo_led_init(int which)
 		break;
 	}
 
-	
 	return 0;
 }
 
@@ -109,52 +109,80 @@ static struct led_operations board_demo_led_opr = {
 };
 
 /*
-* 当dev和drv匹配上之后，则我们进行probe，把相关引脚等资源信息从platform_device中获取出来
+* 当dev和drv匹配上之后，则我们进行probe(设备树时，这里会根据节点的个数进行probe)，把相关引脚等资源信息从platform_device中获取出来
 */
 static int board_demo_gpio_drv_probe(struct platform_device *dev)
 {
-	int i;
+	int err = 0;
 	struct resource *p_res = NULL;
+	struct device_node *np;
+	int led_pin = 0;
 
-	/*
-	* 获得资源,因为不知道具体是存在哪些资源的
-	*/
-	while(1)
-	{
-		p_res = platform_get_resource(dev,IORESOURCE_IRQ, i++);
-		if(!p_res)
-			break;
+	//np不为空时，说明来自设备树，否则，就不是来自设备树
+	np = dev->dev.of_node;
+	if(!np)
+		return -1;
 
-		g_ledpins[g_ledcnt] = p_res->start;
-
-		led_device_create(g_ledcnt);
-		g_ledcnt++;
-	}
-
-	//device_create
+	err = of_property_read_u32(np, "pin", &led_pin);
 	
+	g_ledpins[g_ledcnt] = led_pin;
+	led_device_create(g_ledcnt);
+	g_ledcnt++;
+
 	return 0;
 }
 
+/*
+* remove 在设备树情况下也会根据节点调用多次
+*/
 static int board_demo_gpio_drv_remove(struct platform_device *dev)
 {
+	struct resource *res;
+	struct device_node *np;
+	int led_pin;
+	int err;
+
+	np = dev->dev.of_node;
+	if(!np)
+		return -1;
+	
+	err = of_property_read_u32(np,"pin",&led_pin);
+
 	//device_destroy
 	int i;
 	for(i = 0; i < g_ledcnt;i++)
 	{
-		led_device_destroy(i);
+		if(led_pin == g_ledpins[i])
+		{
+			led_device_destroy(i);
+			g_ledpins[i] = -1;
+			break;
+		}
 	}
 
-	g_ledcnt = 0;
-	
+	for(i = 0; i < g_ledcnt;i++)
+	{
+		if(-1 != g_ledpins[i])
+			break;
+	}
+
+	if(i == g_ledcnt)
+		g_ledcnt = 0;
+
 	return 0;
 }
+
+static const struct of_device_id kxb_leds[] = {
+	{ .compatible = "kxb,leddrv" },
+	{},
+};
 
 static struct platform_driver board_demo_gpio_drv = {
 	.probe		= board_demo_gpio_drv_probe,
 	.remove		= board_demo_gpio_drv_remove,
 	.driver		= {
 		.name	= "kxb_led",
+		.of_match_table = kxb_leds,
 	},
 };
 

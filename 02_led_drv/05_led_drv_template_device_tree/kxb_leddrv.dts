@@ -1,12 +1,12 @@
 #define GROUP_PIN(g,p) ((g<<16) | (p))
 
 / {
-	kxb_led0 {
+	kxb_led@0 {
 		compatible = "kxb,leddrv";
 		pin = <GROUP_PIN(3,1)>;
 	};
 
-	kxb_led1 {
+	kxb_led@1 {
 		compatible = "kxb,leddrv";
 		pin = <GROUP_PIN(5,3)>;
 	};
